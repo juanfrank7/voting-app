@@ -3,10 +3,7 @@ package com.fusepong.votingapp.controllers;
 import com.fusepong.votingapp.models.User;
 import com.fusepong.votingapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import java.util.List;
@@ -27,8 +24,8 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public User getUser(Integer id){
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    public User getUser(@PathVariable Integer id){
         return userService.getUser(id);
     }
 
@@ -39,12 +36,12 @@ public class UserController {
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public User findUserByEmail(@RequestBody String email){
-        return null;
+        return userService.findUserByEmail(email);
     }
 
     @RequestMapping(value = "/search/{email}", method = RequestMethod.GET)
     public User findUserByEmailAndPassword(@RequestBody String email, String pass){
-        return null;
+        return userService.findUserByEmailAndPassword(email, pass);
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
