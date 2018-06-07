@@ -1,5 +1,8 @@
 package com.fusepong.votingapp.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 
@@ -9,6 +12,7 @@ import javax.validation.constraints.Email;
  */
 @Entity
 @Table(name = "candidate")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Candidate {
 
     @Id
@@ -34,25 +38,22 @@ public class Candidate {
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "votes")
     private Integer votes;
 
-    @OneToOne(fetch = FetchType.LAZY,
-            cascade =  CascadeType.ALL,
+    @OneToOne(cascade =  CascadeType.ALL,
             mappedBy = "candidate")
+    @JsonBackReference
     private Proposal proposal;
 
     public Candidate(){}
 
     public Candidate( String firstName, String lastName, String polParty, String cv, String email, String password){
-
         this.firstName = firstName;
         this.lastName = lastName;
         this.polParty = polParty;
         this.cv = cv;
         this.email = email;
         this.password = password;
-        this.votes = 0;
     }
 
     public Integer getIdC() {

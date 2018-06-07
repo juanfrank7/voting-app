@@ -1,6 +1,8 @@
 package com.fusepong.votingapp.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "user")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
@@ -38,21 +41,20 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private Boolean isAdmin = false;
+    private Boolean admin;
 
     public User() {
 
     }
 
-
-    public User(String firstname, String lastname, Date birth, String cedula, String email, String pass, Boolean isAdmin) {
+    public User(String firstname, String lastname, Date birth, String cedula, String email, String pass, Boolean admin) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.birth = birth;
         this.cedula = cedula;
         this.email = email;
         this.password = pass;
-        this.isAdmin = isAdmin;
+        this.admin = admin;
     }
 
     public Integer getIdUser() {
@@ -112,11 +114,11 @@ public class User {
     }
 
     public Boolean getAdmin() {
-        return isAdmin;
+        return admin;
     }
 
     public void setAdmin(Boolean admin) {
-        isAdmin = admin;
+        this.admin = admin;
     }
 
     @Override

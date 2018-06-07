@@ -1,6 +1,10 @@
 package com.fusepong.votingapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.io.Serializable;
 
 /*
     @author Juanfg
@@ -8,7 +12,9 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "proposal")
-public class Proposal {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Proposal implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idP;
@@ -19,8 +25,9 @@ public class Proposal {
     @Column(nullable = false)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "idCandidate", nullable = false)
+    @JsonManagedReference
     private Candidate candidate;
 
     public Proposal(){}

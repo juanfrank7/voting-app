@@ -19,57 +19,63 @@ import java.util.List;
 public class CandidateController {
 
     @Autowired
-    CandidateRepository candidateRepository;
+    private CandidateRepository candidateRepository;
 
     @Autowired
-    ProposalRepository proposalRepository;
+    private ProposalRepository proposalRepository;
 
     @GetMapping
     public List<Candidate> getCandidates() {
         return candidateRepository.findAll();
     }
 
-    @GetMapping("/{candId}")
-    public Candidate findCandidateById(@PathVariable Integer id) {
-        return candidateRepository.getOne(id);
+    @GetMapping("/{idCandidate}")
+    public Candidate findCandidate(@PathVariable Integer idCandidate) {
+        return candidateRepository.getOne(idCandidate);
     }
 
     @PostMapping("/new")
     public Candidate createCandidate(@RequestBody Candidate cand) {
         if (getCandidateByEmail(cand.getEmail()) == null) {
+            cand.setVotes(0);
             candidateRepository.saveAndFlush(cand);
         }
         return cand;
     }
 
     @GetMapping("/byEmail")
-    public Candidate getCandidateByEmail(@RequestBody String email) {
+    public Candidate getCandidateByEmail(@RequestParam("email") String email) {
         return candidateRepository.getCandidateByEmail(email);
     }
 
     @PostMapping("/{idCandidate}/prop")
     public Proposal addProposal(@PathVariable Integer idCandidate, @RequestBody Proposal prop) throws ServletException{
-        if (idCandidate == proposalRepository.getOne(prop.getIdP()).getCandidate().getIdC()){
+        Candidate newC = candidateRepository.getOne(idCandidate);
+        if (newC.getProposal()!=null){
             throw new ServletException("Este candidato ya tiene una propuesta agregada");
         }
-        candidateRepository.getOne(idCandidate).setProposal(prop);
+        prop.setCandidate(newC);
+        newC.setProposal(prop);
         return proposalRepository.saveAndFlush(prop);
     }
 
     @PutMapping("/{idCandidate}/prop")
     public Proposal modifyProposal(@PathVariable Integer idCandidate, @RequestBody Proposal prop){
         Candidate candidate = candidateRepository.getOne(idCandidate);
+        prop.setCandidate(candidate);
         candidate.setProposal(prop);
         return proposalRepository.save(prop);
     }
 
     @DeleteMapping("/{idCandidate}/prop/{idProposal}")
-    public boolean deleteProposal(Integer idCandidate, Integer idProposal) throws ServletException{
+    public boolean deleteProposal(@PathVariable Integer idCandidate, @PathVariable Integer idProposal) throws ServletException {
         boolean deleted = proposalRepository.existsById(idProposal);
-        if (deleted){
+        if (deleted) {
             Candidate candidate = candidateRepository.getOne(idCandidate);
             candidate.setProposal(null);
             proposalRepository.deleteById(idProposal);
+        } else {
+            throw new ServletException("No se puede borrar esta propuesta");
         }
         return deleted;
     }
@@ -80,7 +86,7 @@ public class CandidateController {
     }
 
     @GetMapping("/{idCandidate}/prop/{idProposal}")
-    public Proposal getProposalById(Integer idCandidate, Integer idProposal){
+    public Proposal getProposalById(@PathVariable Integer idCandidate, @PathVariable Integer idProposal){
         return proposalRepository.getOne(idProposal);
     }
 

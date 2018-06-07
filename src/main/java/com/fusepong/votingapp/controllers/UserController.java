@@ -2,7 +2,6 @@ package com.fusepong.votingapp.controllers;
 
 import com.fusepong.votingapp.models.User;
 import com.fusepong.votingapp.repositories.UserRepository;
-import com.fusepong.votingapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @GetMapping("/users")
     public List<User> getUsers() {
@@ -38,8 +37,14 @@ public class UserController {
         return user;
     }
 
+    @PatchMapping("/user/{id}")
+    public boolean changeAdmin(@PathVariable Integer id, @RequestParam("admin") boolean admin){
+        userRepository.getOne(id).setAdmin(admin);
+        return admin;
+    }
+
     @GetMapping("/search")
-    public User findUserByEmail(@RequestBody String email){
+    public User findUserByEmail(@RequestParam("email") String email){
         return userRepository.findUserByEmail(email);
     }
 
